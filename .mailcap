@@ -1,0 +1,23 @@
+##this is used when (v)iewing a text/html attachment:
+##allowing you to browse and "click" links
+##order matters the first entry which passes the test is used
+#gui browser if $DISPLAY is set
+
+# text/html; mozilla %s; test=test -n "$DISPLAY"; nametemplate=%s.html
+
+#text browser otherwise
+
+# text/html; DISPLAY="" w3m -v -F -T text/html %s; nametemplate=%s.html; needsterminal
+
+##auto_view will use the entry with the copiousoutput part:
+
+text/html; lynx -display_charset=utf8 -stdin -dump -force_html ; copiousoutput
+# text/html; w3m -I %{charset} -T text/html -dump; copiousoutput
+# text/html; w3m -dump -T text/html ; copiousoutput
+
+application/pdf; view_attachment.sh %s pdf 
+application/*; view_attachment.sh %s "-"
+application/msword; view_attachment.sh %s "-"
+audio/*; view_attachment.sh %s "-"
+image/*; view_attachment.sh %s "-"
+video/*; view_attachment.sh %s "-"

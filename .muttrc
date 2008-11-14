@@ -1,0 +1,247 @@
+set check_mbox_size=yes
+
+
+set mail_check=20
+set timeout=60
+set pager_context=1
+set pager_index_lines=6                 #mostra un mini-indice nel pager
+set menu_scroll
+set pgp_verify_sig=no                   #non mostrare il pgp nel pager
+set status_on_top                       #metti la linea di stato in alto
+set sort=threads                        #visualizza i messaggi per argomento nell'indice
+
+set status_format=" %r %b %f %n      Del %d      Msgs %m %l %> (%P)"
+#set pager_format="%-10.10i %[!%a %b %d %R]"
+set pager_format="%Z (%C/%m) %D %s"
+#set date_format="!%H:%M %a %d %b     "
+#set date_format="%a %d-%m-%Y %H:%M    "
+set date_format="%a %Y-%m-%d %H:%M"
+set index_format="%[%d/%m %R] %Z  %?X?%-15.15F (%X)&%-19.19F? %s"
+#set index_format="%4C %Z %{%b %d} %-15.15L (%?l?%4l&%4c?) %s" #default
+
+set folder_format="%2C %t %4s   %d  %N %f"
+#set folder_format="%2C %t %N %F %2l %-8.8u %-8.8g %8s %d %f"
+
+set quote_regexp="^([ \t]*[$||>:}#])+"
+set ispell = "/usr/bin/aspell --mode=email check --lang=it_IT"
+
+#set from="Alessio Bolognino <CHANGEME!>"         #imponi il tuo campo from
+set from="Alessio Bolognino <CHANGEME!>"         #imponi il tuo campo from
+#set realname="myname"
+
+set record="$HOME/mail/sent"        #le email inviate sono salvate qui
+#set delete=yes                          #cancella senza chiederlo
+set include=yes #quota i messaggi alla risposta
+set fast_reply=yes          #non chiedere se devi rispondere
+set beep=no             #niente rumore
+set markers=no              #non aggiungere un "+" quoando vai a capo
+set confirmappend=no            #no prompt for save to =keep
+set to_chars="W TCFL"
+set postponed=$HOME/mail/postponed
+set charset=utf-8
+set send_charset=utf-8
+#set ascii_chars=yes
+
+set query_command="lbdbq '%s'"  # calling lbdbq
+macro alias Q "!lbdbq ."        "lbdb query"
+set folder = $HOME/mail
+mailboxes =inbox
+mailboxes =duplicates
+mailboxes =spam
+mailboxes =probably-spam
+mailboxes =keep
+mailboxes =sent
+mailboxes =postponed
+mailboxes =mairix_res
+save-hook .* =spam #la mbox di default per (s)alvare le mail è =keep
+
+#mailboxes =`echo $HOME/mail/*/*`
+
+#account:
+mailboxes  `echo $HOME/mail/accounts/*`
+
+#mailing lists:
+mailboxes `echo $HOME/mail/lists/*`
+
+#subscribe =`echo $HOME/mail/lists/*`
+#subscribe =lists/arch-ml 
+subscribe vim-mac@vim.org
+subscribe vim_mac@googlegroups.com
+subscribe studenti-scientifiche@liste.unimi.it
+subscribe studenti@liste.unimi.it
+subscribe infotelecom-unimi@googlegroups.com
+subscribe arch-ml
+subscribe arch-dev-public
+subscribe arch-projects
+subscribe arch-tur
+subscribe arch-general 
+subscribe aur-general
+subscribe arch-commits
+subscribe fluxbox-devel
+subscribe milug
+subscribe mutt-dev
+subscribe mutt-users
+subscribe pacman-dev
+subscribe sf-news
+subscribe sikurezza
+subscribe tgif
+subscribe unimi_prog
+subscribe openlabs
+
+auto_view text/html
+alternative_order text/plain text/html
+set rfc2047_parameters
+
+
+bind pager h display-toggle-weed
+
+bind pager ] previous-line
+
+# Search mail
+# Mairix
+macro generic ,f "<shell-escape>mairix " "search via mairix"
+
+# Load the results mailbox
+macro generic ,,f "<change-dir><kill-line>=mairix_res<enter>" "load the search results mailbox"
+
+
+macro browser m "<return><mail>" "write new message" 
+
+
+# simula il vecchio menu delle url
+macro index \cb |urlview\n 'call urlview to extract URLs out of a message
+macro pager \cb |urlview\n 'call urlview to extract URLs out of a message
+
+#esegui fetchmail premendo il tasto G
+macro browser G "!fetchmail -a -m 'procmail -d %T' 2>/dev/null \r" "get mail"
+macro index G "!fetchmail -a -m 'procmail -d %T' 2>/dev/null \r" "get mail"
+macro pager G "!fetchmail -a -m 'procmail -d %T' 2>/dev/null \r" "get mail"
+macro index S "!sa-learn --progress --mbox --spam $HOME/mail/spam\r" "sa-learn read the spam mbox"
+macro pager S "!sa-learn --progress --mbox --spam $HOME/mail/spam\r" "sa-learn read the spam mbox"
+macro index H '<enter-command>set editor="~/bin/unspam.sh"<enter><edit-message><enter-command>set editor="$EDITOR"<enter>' "unspam a message"
+macro index <esc>H '<enter-command>unset wait_key<enter><pipe-message>sa-learn -- ham --no-rebuild -D >> ~/mail/.sa-learn.log 2>&1 &<enter><enter-command>set wait_key=yes<enter>' "pipe no-spam msg to sa-learn"
+
+macro index <esc>q '<enter-command>set editor="~/bin/unhtml.sh"<enter><edit-message><enter-command>set editor="$EDITOR"<enter>' "html message to text"
+macro pager <esc>q '<enter-command>set editor="~/bin/unhtml.sh"<enter><edit-message><enter-command>set editor="$EDITOR"<enter>' "html message to text"
+
+
+#Questa è la lista degli header da togliere quando la mail viene
+#visualizzata
+ignore *
+unignore  Date To From: Subject X-Mailer Organization User-Agent Cc Bcc
+hdr_order Date From To Cc Bcc Subject X-Mailer User-Agent Organization
+
+
+color   hdrdefault  cyan  default
+color   header      yellow default "^from:"
+color   header          yellow default   "^subject:"
+
+color   quoted          green     default
+color quoted1 yellow default
+color quoted2 magenta default
+color quoted3 red default
+color   signature       blue default
+
+color   indicator       brightred default            
+
+color   error           red             default
+mono    error           bold
+color   status          white		blue
+mono    status      bold
+color   tree            blue  default
+
+color   tilde           magenta   default
+color   body            blue default   "^gpg: .*"
+color   body            blue default   "^Primary key fingerprint:.*"
+color   body            green default   "^gpg: Good signature.*"
+color   body            red     default "^gpg: BAD signature.*"
+# color   body            yellow default "^gpg: Can't check signature.*"
+color   body            red default "^gpg: Can't check signature.*"
+#color   normal          white       blue
+color   normal      white           default
+color   message     green   default
+color   attachment brightdefault  default
+
+# color   body    brightwhite     default    "[-a-z_0-9.]+@[-a-z_0-9.]+"
+# mono    body    bold                    "[-a-z_0-9.]+@[-a-z_0-9.]+"
+color body  brightblue default  "<?[-a-zA-Z_0-9.+]+@[-a-zA-Z_0-9.]+>?"
+color body  brightblue default "(https?|ftp|gopher|finger)://([^"'"'"' \t\r\n)>.,!?&]\
+|[.,!?][^"'"'"' \t\r\n)>.,!?&]|&([^g]|$)|&g([^t]|$)|&gt([^;]|$))+"
+
+# enphasized text
+color body    brightwhite default     "[*][-[:alnum:]]+[*]"
+color body    brightwhite       default     "[ ]_[-[:alnum:]]+_([ ]|\.)"
+
+color index red default ~D
+color index yellow default ~T
+color index green default ~N
+color index green default ~U
+color index brightyellow default ~F
+
+set sendmail="/opt/local//bin/msmtp --account=alessio.bolognino"
+
+set envelope_from=yes
+set use_from=yes
+
+# bind index n next-new
+bind index <tab> next-unread
+bind index j next-entry
+bind index k previous-entry
+bind index <Down> next-entry
+bind index <Up> previous-entry
+bind pager ^S skip-quoted
+# bind pager n next-new
+
+bind browser f check-new
+
+## OPZIONI PER GLI ALIAS
+
+# visualizza il nome reale dell'autore dell'email preso dai propri alias
+set reverse_alias = yes
+
+# file contenente gli alias - si DEVE fare il source del file
+# NdA: preferisco tenere i file accessori di configurazione nella maildir
+set alias_file = ~/.muttrc.alias
+source ~/.muttrc.alias
+
+# GPG / GNUPG / PGP stuff
+
+source ~/.muttrc.gpg
+
+# formato degli alias
+#set alias_format = "%2n %t %-10a   %r"
+
+# ordina gli alias in base all'alias (oppure address)
+set sort_alias = alias
+
+folder-hook .*accounts/themolok@*	       "set from=\"Alessio (molok) Bolognino <CHANGEME!>\""
+folder-hook .*lists.*                      "set from=\"Alessio (molok) Bolognino <CHANGEME!>\""
+folder-hook .*accounts/pippo42.*           'set from="<CHANGEME!>"'
+folder-hook .*accounts/alebolosoft.* 	   'set from="<CHANGEME!>"'
+folder-hook .*accounts/alessio.bolognino.* 'set from="Alessio Bolognino <CHANGEME!>"'
+folder-hook .*accounts/studenti.unimi.it.* 'set from="Alessio Bolognino <CHANGEME!>"'
+folder-hook .*lists/unimi.*                'set from="Alessio Bolognino <CHANGEME!>"'
+#folder-hook .*lists/unimi.*           'set from="Alessio Bolognino <CHANGEME!>"'
+
+# TODO: CAMBIARE I FOLDER-HOOK IN SEND-HOOK
+folder-hook .*accounts/themolok@*          'set signature=~/.signature.nick'
+folder-hook .*lists.*                      'set signature=~/.signature.nick.lists'
+folder-hook .*accounts/pippo42.*           'set signature=~/.signature.empty'
+folder-hook .*accounts/alebolosoft.*       'set signature=~/.signature.empty'
+folder-hook .*accounts/alessio.bolognino.* 'set signature=~/.signature.me'
+folder-hook .*accounts/studenti.unimi.it.* 'set signature=~/.signature.me'
+folder-hook .*lists/unimi.*                'set signature=~/.signature.me'
+
+folder-hook .*accounts/themolok@*               'set sendmail="/usr/bin/msmtp --account=themolok"' 
+folder-hook .*accounts/alessio.bolognino.*      'set sendmail="/usr/bin/msmtp --account=alessio.bolognino"'
+folder-hook .*lists.*                           'set sendmail="/usr/bin/msmtp --account=tiscali"'
+folder-hook .*accounts/studenti.unimi.it        'set sendmail="/usr/bin/msmtp --account=tiscali"'
+folder-hook .*accounts/pippo42.*                'set sendmail="/usr/bin/msmtp --account=tiscali"' 
+folder-hook .*accounts/alebolosoft.*            'set sendmail="/usr/bin/msmtp --account=tiscali"' 
+
+macro compose \e1 "<edit-from><kill-line>Alessio Bolognino <CHANGEME!>\n<enter-command>set sendmail=\"/usr/bin/msmtp --account=alessio.bolognino\"\n" "From: CHANGEME!"
+macro compose \e2 "<edit-from><kill-line>Alessio 'molok' Bolognino <CHANGEME!>\n<enter-command>set sendmail=\"/usr/bin/msmtp --account=themolok\"\n" "From: CHANGEME!"
+macro compose \e3 "<edit-from><kill-line>Alessio Bolognino <CHANGEME!>\n<enter-command>set sendmail=\"/usr/bin/msmtp --account=tiscali\"\n" "From: CHANGEME!"
+macro compose \e4 "<edit-from><kill-line>Alessio 'molok' Bolognino <CHANGEME!>\n<enter-command>set sendmail=\"/usr/bin/msmtp --account=tiscali\"\n" "From: CHANGEME!"
+macro compose \e5 "<edit-from><kill-line><CHANGEME!>\n<enter-command>set sendmail=\"/usr/bin/msmtp --account=tiscali\"\n" "From: CHANGEME!"
+macro compose \e6 "<edit-from><kill-line><CHANGEME!>\n<enter-command>set sendmail=\"/usr/bin/msmtp --account=tiscali\"\n" "From: CHANGEME!"

@@ -1,0 +1,82 @@
+!*foreground:     rgb:dd/dd/dd
+!*background:     rgb:22/22/22
+!*background:     black
+!black
+*color0:         rgb:19/19/19
+*color8:         rgb:25/25/25
+!red
+*color1:         rgb:80/32/32
+*color9:         rgb:d1/32/32
+!green
+!*color2:         rgb:5b/76/2f
+*color2:         rgb:5b/b5/2f
+*color10:        rgb:89/b8/3f
+!brown/yellow
+*color3:         rgb:aa/99/43
+*color11:        rgb:ef/ef/60
+!blue
+*color4:         rgb:32/4c/80
+!*color12:        rgb:2b/4f/98
+*color4:        rgb:42/75/dd
+*color12:        rgb:42/75/dd
+!magenta
+*color5:         rgb:70/6c/9a
+*color13:        rgb:82/6a/b1
+!cyan
+*color6:         rgb:92/b1/9e
+*color14:        rgb:a1/cd/cd
+!white
+*color7:         rgb:ff/ff/ff
+*color15:        rgb:dd/dd/dd
+
+!urxvt settings
+urxvt*geometry:         132x40
+urxvt*saveLines:        16283
+urxvt*scrollTtyKeypress:true
+urxvt*scrollTtyOutput:  false
+urxvt*scrollBar:        false
+urxvt*loginShell:       true
+!urxvt*internalBorder:   0
+urxvt*termName:         rxvt-unicode
+!urxvt*inheritPixmap:    true
+!urxvt*shading:          50
+!urxvt*tintColor:        #888
+urxvt*font:             xft:Terminus-8
+urxvt*cutchars:         "()*,<>[]{}|'
+urxvt*print-pipe:       cat > $(echo urxvt.dump.`date +'%Y%M%d%H%m%S'`)
+urxvt*secondaryScroll:  true
+urxvt*mapAlert:         true
+urxvt*utmpInhibit:      true
+urxvt*perl-lib:         /usr/lib/urxvt/perl/
+urxvt*perl-ext-common:  option-popup,matcher
+urxvt*urlLauncher: /usr/bin/firefox
+urxvt*matcher.button:   1
+urxvt*background:		rgba:0000/0000/0000/dddd
+urxvt*foreground:		rgb:dd/dd/dd
+urxvt*depth:            32
+
+!xterm settings
+xterm*dynamicColors:    true
+xterm*utf8:             2
+xterm*eightBitInput:    true
+xterm*saveLines:        32767
+xterm*scrollTtyKeypress:true
+xterm*scrollTtyOutput:  false
+xterm*scrollBar:        false
+xterm*loginShell:       true
+!xterm*faceName:         Dejavu Sans Mono:pixelsize=10
+xterm*jumpScroll:       true
+xterm*multiScroll:      true
+xterm*toolBar:          false
+
+Xcursor*theme:          default
+
+Xft*dpi:                100
+Xft*antialias:          true
+
+xpdf*enableFreetype: yes
+xpdf*antialias: yes
+xpdf*foreground: rgb:dd/dd/dd
+xpdf*background: rgb:22/22/22
+xpdf*urlCommand: /usr/bin/firefox %s
+xpdf*viKeys: on

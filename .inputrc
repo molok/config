@@ -1,0 +1,23 @@
+# set meta-flag on
+# set input-meta on
+# set output-meta on
+# set convert-meta off
+# "\e[1~": home
+# "\e[4~": end
+# "\e[5C": forward-word
+# "\e[5D": backward-word
+set match-hidden-files off
+# "\e[3~": backward-delete-char 
+
+
+# vi style stuff:
+
+# set convert-meta on
+# ^p check for partial match in history
+# bind -m vi-insert "Control-p": dynamic-complete-history
+        
+# ^n cycle through the list of partial matches
+# bind -m vi-insert "Control-n": menu-complete
+
+# ^l clear screen
+#bind -m vi-insert control-l:clear-screen

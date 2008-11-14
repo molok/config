@@ -140,8 +140,8 @@ if has("autocmd")
     au FileType cvs setlocal spell
     au BufReadPost * if line("'\"")>0 && line("'\"")<=line("$")|exe "normal g`\""|endif
     au BufRead,BufNewFile *PKGBUILD* setlocal ft=PKGBUILD
-    au BufRead,BufNewFile *PKGBUILD* iab Maintainer: Maintainer: Alessio 'molok' Bolognino <themolok@gmail.com>
-    au BufRead,BufNewFile *PKGBUILD* iab Contributor: Contributor: Alessio 'molok' Bolognino <themolok@gmail.com>
+    au BufRead,BufNewFile *PKGBUILD* iab Maintainer: Maintainer: Alessio 'molok' Bolognino <CHANGEME!@gmail.com>
+    au BufRead,BufNewFile *PKGBUILD* iab Contributor: Contributor: Alessio 'molok' Bolognino <CHANGEME!@gmail.com>
     au BufRead,BufNewFile *themolok.netsons.org_* setlocal ft=html
     au BufReadPost /tmp/crontab.* set backupcopy=yes
     au BufRead,BufNewFile * iab STARTCUT ------------8<-------------------8<-------------------8<---------------

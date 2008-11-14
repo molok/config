@@ -1,0 +1,62 @@
+set ignorecase
+set activate=quickmark,paste,tabopen
+set visualbell
+set complete=sbfh
+set defsearch=google
+set maxhints=1000
+set preload
+set previewheight=20
+set showmode
+set showstatuslinks
+set showtabline=2
+set titlestring=Vimperator Dev
+set verbose=9
+set wildmode=list:full
+set popups=4
+set guioptions=n
+
+" start MozRepl
+js <<EOF
+  if ('@hyperstruct.net/mozlab/mozrepl;1' in Components.classes)
+  {
+      Components
+          .classes['@hyperstruct.net/mozlab/mozrepl;1']
+          .getService(Components.interfaces.nsIMozRepl)
+          .start(4242);
+  }
+EOF
+
+" restart Vimperator
+map <C-r>   :restart<CR>
+
+" select next/previous tab
+map <Right> gt
+map <Left>  gT
+map <C-l>   gt
+map <C-h>   gT
+
+" move current tab left/right
+map <S-Right> :tabmove! +1<CR>
+map <S-Left>  :tabmove! -1<CR>
+map <C-L>     :tabmove! +1<CR>
+map <C-H>     :tabmove! -1<CR>
+
+" :autocmd PageLoad .* :js modes.passAllKeys = /google\.com\/reader/.test(buffer.URL)
+
+
+javascript <<EOF
+(function(){
+    var feedPanel = document.createElement("statusbarpanel");
+    feedPanel.setAttribute("id", "feed-panel-clone");
+    feedPanel.appendChild(document.getElementById("feed-button"));
+    feedPanel.firstChild.setAttribute("style", "padding: 0; max-height: 16px;");
+    document.getElementById("status-bar")
+            .insertBefore(feedPanel, document.getElementById("security-button"));
+})();
+EOF
+
+
+echo ".vimperatorrc sourced"
+
+
+" vim: ft=vimperator:

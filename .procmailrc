@@ -1,0 +1,284 @@
+MAILDIR="$HOME/mail"
+LOGFILE="$HOME/.procmaillog"
+FORMAIL=/usr/bin/formail
+#VERBOSE=on
+
+# corregge possibili header from errati 
+:0fhw: 
+| $FORMAIL -I "From " -a "From "
+
+# corregge indicatori di firme errati (maledetto outlook...) 
+:0 fBw * ^--$ 
+| sed -e 's/^--$/-- /'
+
+# corregge prefissi di risposta errati (sempre sia maledetto outlook...) 
+:0 fHw * ^Subject:.*R: 
+| sed -e 's/R:/Re:/g'
+
+
+# Work around procmail bug: any output on stderr will cause the "F" in "From"
+# to be dropped.  This will re-add it.
+# NOTE: This is probably NOT needed in recent versions of procmail
+:0
+* ^^rom[ ]
+{
+  LOG="*** Dropped F off From_ header! Fixing up. "
+  
+  :0 fhw
+  | sed -e '1s/^/F/'
+}
+
+
+#trova i duplicati
+:0 Whc: .msgid.lock 
+| $FORMAIL -D 16384 .msgid.cache
+:0 a 
+$MAILDIR/duplicates
+#salva tutti i mail address che passano ;)
+:0hc 
+| /usr/bin/lbdb-fetchaddr 
+
+# ----------------------------------------
+#           MAILING LISTS
+# ----------------------------------------
+#:0:
+#* ^TO_bugtraq@securityfocus.com
+#$MAILDIR/lists/bugtraq
+
+:0:
+* ^TO_arch-general@archlinux.org
+$MAILDIR/lists/arch-ml
+
+:0:
+* ^TO_arch@archlinux.org
+$MAILDIR/lists/arch-ml
+
+
+:0:
+* ^TO_pacman-dev@archlinux.org
+$MAILDIR/lists/pacman-dev
+
+:0:
+* ^TO_aur-general@archlinux.org
+$MAILDIR/lists/arch-tur
+
+:0:
+* ^TO_tur-users@archlinux.org
+$MAILDIR/lists/arch-tur
+
+:0:
+* ^TO_arch-projects@archlinux.org
+$MAILDIR/lists/arch-projects
+
+:0:
+* ^TO_arch-dev-public@archlinux.org
+$MAILDIR/lists/arch-dev-public
+
+:0:
+* ^From: arch-dev-public-bounces@archlinux.org
+$MAILDIR/lists/arch-dev-public
+
+:0:
+* ^From: root@archlinux.org
+$MAILDIR/lists/arch-dev-public
+
+# :0:
+# * ^TO_arch-commits@archlinux.org
+# $MAILDIR/lists/arch-commits
+
+#:0:
+#* ^TO_slackit-ml@nongnu.org
+#$MAILDIR/lists/slackit
+
+:0:
+* ^TO_ml@sikurezza.org
+$MAILDIR/lists/sikurezza
+
+:0:
+* ^TO_ml-milug@milug.org
+$MAILDIR/lists/milug
+
+#:0:
+#* ^TO_aiuto@gufi.org
+#$MAILDIR/lists/gufi
+
+#:0:
+#* ^TO_ml_ondaquadra@ondaquadra.org
+#$MAILDIR/lists/ondaquadra
+
+#:0:
+#* ^TO_focus-virus@securityfocus.com
+#$MAILDIR/lists/focus-virus
+
+#:0:
+#* ^TO_focus-ms@securityfocus.com
+#$MAILDIR/lists/focus-ms
+
+#:0:
+#* ^TO_focus-linux@securityfocus.com
+#$MAILDIR/lists/focus-linux
+
+#:0:
+#* ^TO_ms-secnews@securityfocus.com
+#$MAILDIR/lists/ms-secnews
+
+#:0:
+#* ^TO_linux-secnews@securityfocus.com
+#$MAILDIR/lists/linux-secnews
+
+#:0:
+#* ^TO_sf-news@securityfocus.com
+#$MAILDIR/lists/sf-news
+
+
+# :0:
+# * ^TO_fluxbox-users@lists.sourceforge.net
+# $MAILDIR/lists/fluxbox-users
+# :0:
+# * ^TO_fluxbox-devel@lists.sourceforge.net
+# $MAILDIR/lists/fluxbox-devel
+
+# :0:
+# * ^TO_mutt-dev@mutt.org
+# $MAILDIR/lists/mutt-dev
+
+:0:
+* ^TO_mutt-users@mutt.org
+$MAILDIR/lists/mutt-users
+
+
+# :0:
+# * ^TO_linux@ml.oltrelinux.com
+# $MAILDIR/lists/oltrelinux-linux
+
+# :0:
+# * ^TO_network@ml.oltrelinux.com
+# $MAILDIR/lists/oltrelinux-network
+
+# :0:
+# * ^TO_security@ml.oltrelinux.com
+# $MAILDIR/lists/oltrelinux-security
+
+# :0:
+# * ^TO_ml@ondaquadra.org
+# $MAILDIR/lists/ondaquadra
+
+# :0:
+# * ^TO_didasantini@googlegroups.com
+# $MAILDIR/lists/unimi_prog
+
+:0:
+* ^TO_tgif@sl-lab.it
+$MAILDIR/lists/tgif
+
+:0:
+* ^TO_openlabs-ml@openlabs.it
+$MAILDIR/lists/openlabs
+
+
+:0:
+* ^TO_infotelecom-unimi@googlegroups.com
+$MAILDIR/lists/unimi_infotelecom
+
+:0:
+* ^TO_vim_mac@googlegroups.com
+$MAILDIR/lists/vim-mac
+
+:0:
+* ^TO_vim-mac@vim.org
+$MAILDIR/lists/vim-mac
+
+
+# SpamAssassin 
+# ==============================
+
+# The following line is only used if you use a system-wide /etc/procmailrc.
+# See procmailrc(5) for infos on what it exactly does, the short version:
+#  * It ensures that the correct user is passed to spamd if spamc is used
+#  * The folders the mail is filed to later on is owned by the user, not
+#    root.
+DROPPRIVS=yes
+
+# Pipe the mail through spamassassin (replace 'spamassassin' with 'spamc'
+# if you use the spamc/spamd combination)
+#
+# The condition line ensures that only messages smaller than 250 kB
+# (250 * 1024 = 256000 bytes) are processed by SpamAssassin. Most spam
+# isn't bigger than a few k and working with big messages can bring
+# SpamAssassin to its knees.
+#
+# The lock file ensures that only 1 spamassassin invocation happens
+# at 1 time, to keep the load down.
+#:
+
+:0fw: spamassassin.lock
+* < 256000
+| spamassassin
+
+
+# Mails with a score of 15 or higher are almost certainly spam (with 0.05%
+# false positives according to rules/STATISTICS.txt). Let's put them in a
+# different mbox. (This one is optional.)
+
+:0:
+* ^X-Spam-Level: \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
+$MAILDIR/spam
+
+
+
+# All mail tagged as spam (eg. with a score higher than the set threshold)
+# is moved to "probably-spam".
+:0:
+* ^X-Spam-Status: Yes
+$MAILDIR/probably-spam
+
+# ----------------------------------------
+#                 ACCOUNTS
+# ----------------------------------------
+:0:
+* ^TO_CHANGEME!@gmail.com
+$MAILDIR/accounts/CHANGEME!@gmail.com
+
+:0:
+* ^TO_CHANGEME!@gmail.com
+$MAILDIR/accounts/CHANGEME!@gmail.com
+
+:0:
+* ^TO_CHANGEME!@email.it
+$MAILDIR/accounts/CHANGEME!@email.it
+
+:0:
+* ^TO_alebolosoft@email.it
+$MAILDIR/accounts/CHANGEME!@email.it
+
+:0:
+* ^Delivered-To: CHANGEME!@gmail.com
+$MAILDIR/accounts/CHANGEME!@gmail.com
+
+:0:
+* ^TO_CHANGEME!@studenti.unimi.it
+$MAILDIR/accounts/studenti.unimi.it
+
+
+:0:
+* ^Delivered-To: CHANGEME!@studenti.unimi.it
+$MAILDIR/accounts/studenti.unimi.it
+
+:0:
+* ^TO_studenti@liste.unimi.it
+$MAILDIR/accounts/studenti.unimi.it
+
+:0:
+* ^TO_*@liste.unimi.it
+$MAILDIR/accounts/studenti.unimi.it
+
+:0:
+* ^Delivered-To: CHANGEME!@gmail.com
+$MAILDIR/accounts/CHANGEME!@gmail.com
+
+# TUTTO IL RESTO VA IN INBOX
+
+:0 * .* 
+$MAILDIR/inbox
+
+exit
